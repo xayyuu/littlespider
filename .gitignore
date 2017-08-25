@@ -81,9 +81,9 @@ celerybeat-schedule
 # Environments
 .env
 .venv
-env/
-venv/
-ENV/
+env/*
+venv/*
+ENV/*
 
 # Spyder project settings
 .spyderproject
@@ -99,7 +99,7 @@ ENV/
 .mypy_cache/
 
 # pycharm
-.idea/
+.idea/*
 
 # tmp file
 csdn_geek_info.txt
