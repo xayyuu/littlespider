@@ -100,3 +100,6 @@ ENV/
 
 # pycharm
 .idea/
+
+# tmp file
+csdn_geek_info.txt
