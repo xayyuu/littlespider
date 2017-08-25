@@ -85,11 +85,3 @@ if __name__ == "__main__":
     reload(sys)
     sys.setdefaultencoding("utf-8")
     login()
-
-
-
-# csdn 流水号
-# LT-2297214-oRywt1EBS137NchFB6SafltbigeLeM
-# LT-2298784-cTNihQtAxBEghcChv1NUYf0q2XGA6L
-# LT-2297132-Jdf1rueQNk7xVNZMVxcnpjOK9jWUhV
-# LT-2297243-zLqgale5ow2wZ2AUsDbyoMSeg1XFAw
