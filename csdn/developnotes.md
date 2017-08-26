@@ -26,3 +26,5 @@ session可以保持连接状态。http本身属于无链接的协议，因此，
 
 - HTTP权威指南
 
+
+- http://www.cnblogs.com/zhaof/p/7284312.html
