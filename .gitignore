@@ -103,3 +103,7 @@ ENV/*
 
 # tmp file
 csdn_geek_info.txt
+
+*.csv
+*.swp
+*.html
