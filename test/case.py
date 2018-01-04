@@ -3,9 +3,8 @@ import requests
 import sys
 sys.path.append("..")
 
-
-
 from qichacha.main import *
+
 
 class QichachaCase(unittest.TestCase):
     def setUp(self):
