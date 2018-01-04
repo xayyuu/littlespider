@@ -16,7 +16,7 @@
 - 随机延迟数秒，拟人
 - 创建多用户，变化使用用户cookies
 - 结合selenium来规避验证码
-    - 为selenium webdriver加cookies，是个很蛋疼的事情
+    - 为selenium webdriver加cookies，是个很蛋疼的事情。找到为selenium webdriver加cookie的方法，要在add_cookies前使用webdriver.get()访问目标网站，不清楚为何。
     
 
 
