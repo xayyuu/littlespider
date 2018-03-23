@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-
+# coding=utf-8
 # 爬取猪八戒网站
+import codecs
 import copy
 import requests
 import lxml
@@ -27,13 +28,14 @@ url_template="http://www.zbj.com/{catalog}/pd{area}k{pagenum}.html"
 headers={
         "Host":"www.zbj.com",
         "Connection":"keep-alive",
-	"Pragma":"no-cache",
+	#"Pragma":"no-cache",
 	"Cache-Control":"no-cache",
 	"Upgrade-Insecure-Requests":"1",
 	"User-Agent":"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36",
 	"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
 	"Accept-Encoding": "gzip, deflate",
-	"Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7"
+	"Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7",
+        "DNT": "1"
         }
 
 def transform_headers(headers, **kw):
@@ -91,22 +93,40 @@ def transform_url(url):
     spec_headers=transform_headers(headers, Host="shop.zbj.com")
     s = requests.session()
     s.headers.update(spec_headers)
-    print(s.headers)
+    #print(s.headers)
+    s.get("http://www.zbj.com/rjkf/pd3498.html")  # 获取cookies，规避TooManyRedirects的异常
+    #print("cookies: ", s.cookies)
     rsp = s.get(salerinfo_url)
     dom = etree.HTML(rsp.text)
     hrefs = dom.xpath("//iframe[contains(@src, 'ucenter.zbj.com/rencai')]/@src")
     hrefs_length = len(hrefs)
     if hrefs_length >= 1:
-        url_type = "ucenter"
+        url_type = "ucenter"  # 普通会员
         target_url = "http:"+hrefs[0]
     else:
-        url_type = "tianpeng"
+        url_type = "tianpeng"  # 天蓬网会员
         target_url = salerinfo_url
     
     return target_url, url_type
 
 def extract_info(page, url_type="ucenter"):
     """ 提取企业信息，包括 企业名，企业地址，企业自我介绍"""
+    def get_info_func(lst):
+        try:
+            return lst[0].xpath("string(.)").strip()
+        except IndexError:
+            return "NONE"
+
+    dom = etree.HTML(page)
+    if url_type == "ucenter":
+        company_name = get_info_func(dom.xpath("//span[@class='user-tit fl']"))  # 找到公司名字
+        area = get_info_func(dom.xpath("//span[@class='fr active-address']"))  # 找到公司地址
+        about = get_info_func(dom.xpath("//span[@class='about']"))  # 找到公司介绍
+    else:  # "tianpeng"
+        company_name = get_info_func(dom.xpath("//p[@class='introduce-company-title']"))
+        about = get_info_func(dom.xpath("//p[@class='introduce-company-msg']"))
+        area = get_info_func(dom.xpath("//div[@class='company-info-container']//dd"))
+    return (company_name, area, about) 
 
 def process_url(url):
     url, url_type = transform_url(url)
@@ -118,16 +138,16 @@ def process_url(url):
     rsp = requests.get(url, headers=spec_headers)
     company_info = extract_info(rsp.text, url_type)
     return company_info
-    pass
 
+def save(info):
+    """ info 是 元组类型 """
+    with codecs.open('test.txt', 'w', 'utf-8') as f:
+        for _info in info:
+            f.write(_info)
+            f.write(" "*8)
+        f.write("\n")
+    
 
 if __name__ == "__main__":
-    #rsp = requests.get("http://www.zbj.com/rjkf/pd3498.html", headers=headers)
-    #pagenum = get_total_page_num(rsp.text)
-    #urls = get_child_urls(rsp.text)
-    ##print(urls)
-    #result = aggregate_url(catalog_code["软件开发"],area_code["广州"])
-    #print(result)
-    print(transform_url("http://shop.zbj.com/17054627/"))
-    pass
+    """"""
 
