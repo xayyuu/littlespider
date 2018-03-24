@@ -10,14 +10,15 @@ def get_api(filename="api.txt"):
         api = f.read()
     return api.strip()
 
-def get_random_proxy_ip():
+def get_random_proxies():
+    """ 每次返回30个代理ip """
     api = get_api()
-    print(api)
+    #print(api)
     rsp = requests.get(api)
     ip_list = rsp.json()
     ip_list = ip_list['msg']
-    idx = random.randint(0, len(ip_list)-1)
-    ip ={"http": "http://"+ip_list[idx]["ip"]+":"+ip_list[idx]["port"]} 
-    print("Using ip: ", ip)
-    return ip
+    proxies = []
+    for elem in ip_list:
+        proxies.append({"http": "http://"+elem["ip"]+":"+elem["port"]})
+    return proxies
 
