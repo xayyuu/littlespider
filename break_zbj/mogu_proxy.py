@@ -13,9 +13,10 @@ def get_api(filename="api.txt"):
 def get_random_proxies():
     """ 每次返回30个代理ip """
     api = get_api()
-    #print(api)
+    print(api)
     rsp = requests.get(api)
     ip_list = rsp.json()
+    print(ip_list['code'])
     ip_list = ip_list['msg']
     proxies = []
     for elem in ip_list:

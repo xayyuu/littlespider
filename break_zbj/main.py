@@ -8,14 +8,12 @@ import lxml
 from lxml import etree
 import time
 import random
-from mogu_proxy import get_random_proxies
 
 
 # 延迟时间 
-min_time = 1.0 # s
-max_time = 2.0 
+min_time = 2.0 # s
+max_time = 4.0 
 
-mogu_proxies=get_random_proxies()
 
 area_code = {"广州": "3493", "深圳": "3510", "佛山": "3498"}
 
@@ -50,10 +48,6 @@ def transform_headers(headers, **kw):
     tmp.update(kw)
     return tmp
 
-def get_validate_proxy():
-    return random.choice(mogu_proxies)
-
-
 def get_total_page_num(text):
     """  从html中找出总页数"""
     dom = etree.HTML(text)
@@ -77,7 +71,7 @@ def aggregate_url(catalog, area, size=40):
     """ 根据不同区域，不同类别，找到相似的一类url地址集合 
         catalog: 行业分类代码 area:  地区代码 """
     first_page_url = first_page_url_template.format(catalog=catalog, area=area)
-    rsp = requests.get(first_page_url, headers=headers, proxies=get_validate_proxy())
+    rsp = requests.get(first_page_url, headers=headers)
     pagenum = get_total_page_num(rsp.text)
     url_cluster = set()
     urls = get_child_urls(rsp.text)  # 第一页也要获取其所有子链接
@@ -86,7 +80,7 @@ def aggregate_url(catalog, area, size=40):
     for i in range(1, pagenum):
         pagenum_suffix = i*size
         url = url_template.format(catalog=catalog, area=area, pagenum=pagenum_suffix) 
-        rsp = requests.get(url, headers=headers, proxies=get_validate_proxy())
+        rsp = requests.get(url, headers=headers)
         urls = get_child_urls(rsp.text)
         url_cluster.update(urls)
         print(url_cluster)
@@ -100,7 +94,6 @@ def transform_url(url):
     salerinfo_url=url+"salerinfo.html"
     spec_headers=transform_headers(headers, Host="shop.zbj.com")
     s = requests.session()
-    s.proxies = get_validate_proxy()
     s.headers.update(spec_headers)
     #print(s.headers)
     s.get("http://www.zbj.com/rjkf/pd3498.html")  # 获取cookies，规避TooManyRedirects的异常
@@ -145,7 +138,7 @@ def process_url(url):
         spec_headers=transform_headers(headers, Host="shop.zbj.com")
     else:
         spec_headers=transform_headers(headers, Host="ucenter.zbj.com")
-    rsp = requests.get(url, headers=spec_headers, proxies=get_validate_proxy()) 
+    rsp = requests.get(url, headers=spec_headers)
     time.sleep(random.uniform(min_time, max_time)) # 避免访问过于频繁
     company_info = extract_info(rsp.text, url_type)
     return company_info
