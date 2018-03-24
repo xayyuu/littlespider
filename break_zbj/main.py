@@ -99,7 +99,8 @@ def transform_url(url):
     assert isinstance(url, str)
     salerinfo_url=url+"salerinfo.html"
     spec_headers=transform_headers(headers, Host="shop.zbj.com")
-    s = requests.session(proxies=get_validate_proxy())
+    s = requests.session()
+    s.proxies = get_validate_proxy()
     s.headers.update(spec_headers)
     #print(s.headers)
     s.get("http://www.zbj.com/rjkf/pd3498.html")  # 获取cookies，规避TooManyRedirects的异常
