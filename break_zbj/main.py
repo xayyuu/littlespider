@@ -77,13 +77,13 @@ def aggregate_url(catalog, area, size=40):
     urls = get_child_urls(rsp.text)  # 第一页也要获取其所有子链接
     url_cluster.update(urls)
     #print(url_cluster)
+    print("aggregate url......")
     for i in range(1, pagenum):
         pagenum_suffix = i*size
         url = url_template.format(catalog=catalog, area=area, pagenum=pagenum_suffix) 
         rsp = requests.get(url, headers=headers)
         urls = get_child_urls(rsp.text)
         url_cluster.update(urls)
-        print(url_cluster)
         time.sleep(random.uniform(min_time, max_time)) # 避免访问过于频繁
     return url_cluster
 
@@ -96,7 +96,7 @@ def transform_url(url):
     s = requests.session()
     s.headers.update(spec_headers)
     #print(s.headers)
-    s.get("http://www.zbj.com/rjkf/pd3498.html")  # 获取cookies，规避TooManyRedirects的异常
+    s.head("http://www.zbj.com/home/p.html")  # 获取cookies，规避TooManyRedirects的异常
     #print("cookies: ", s.cookies)
     rsp = s.get(salerinfo_url)
     dom = etree.HTML(rsp.text)
@@ -141,11 +141,12 @@ def process_url(url):
     rsp = requests.get(url, headers=spec_headers)
     time.sleep(random.uniform(min_time, max_time)) # 避免访问过于频繁
     company_info = extract_info(rsp.text, url_type)
+    print("process url: ", url)
     return company_info
 
 def save(info, filename="text.txt"):
     """ info 是 元组类型 """
-    with codecs.open(filename, 'w', 'utf-8') as f:
+    with codecs.open(filename, 'a', 'utf-8') as f:
         for _info in info:
             f.write(_info)
             f.write(" "*8)
@@ -155,8 +156,9 @@ def save(info, filename="text.txt"):
 if __name__ == "__main__":
     """ """
     urls = aggregate_url(catalog_code["软件开发"],area_code["广州"])
+    filename  = "rjkf-gz.txt"
+    open(filename, 'w').close()  # 清空文件
     for url in urls:
         info = process_url(url)
-        save(info) 
-
+        save(info, filename) 
 
