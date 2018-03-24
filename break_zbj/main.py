@@ -129,6 +129,7 @@ def extract_info(page, url_type="ucenter"):
     return (company_name, area, about) 
 
 def process_url(url):
+    """ 这个函数需要加入随机事件等待，避免被屏蔽  """
     url, url_type = transform_url(url)
     assert url_type in ("tianpeng", "ucenter")
     if url_type == "tianpeng":
@@ -136,6 +137,7 @@ def process_url(url):
     else:
         spec_headers=transform_headers(headers, Host="ucenter.zbj.com")
     rsp = requests.get(url, headers=spec_headers)
+    time.sleep(random.uniform(2.0,4.0)) # 避免访问过于频繁
     company_info = extract_info(rsp.text, url_type)
     return company_info
 
